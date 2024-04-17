@@ -1,18 +1,4 @@
-# flutter_application_1
-
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Calculadora IMC
+O aplicativo é uma calculadora de IMC onde você pode avaliar seu índice de massa corporal baseado na informação relevante no peso de corpo, na altura do indivíduo.
 
 APK: https://github.com/BiaSantos01/CalculadoraIMC/blob/a002e9fec2d1fc71885a9ca903a115ac3c255bdd/app-release.apk
