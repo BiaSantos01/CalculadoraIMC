@@ -1,290 +1,123 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(AppCrud());
+  runApp(MyCalculator());
 }
 
-class Compras {
-  String nome;
-  String categoria;
-  String precoMaximo;
-
-  Compras({
-    required this.nome,
-    required this.categoria,
-    required this.precoMaximo,
-  });
-}
-
-class AppCrud extends StatelessWidget {
+class MyCalculator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Lista de Compras',
+      title: 'Calculadora de IMC',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 255, 255, 255),
-          title: Text('Lista de Compras'),
-        ),
-        body: LoginPage(),
-      ),
+      home: Calculator(),
     );
   }
 }
 
-class LoginPage extends StatefulWidget {
+class Calculator extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _CalculatorState createState() => _CalculatorState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+class _CalculatorState extends State<Calculator> {
+  // Variáveis para armazenar os valores dos operandos
+  double _peso = 0;
+  double _altura = 0;
+  double _result = 0;
+  String _classificacao = '';
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.fromARGB(255, 136, 181, 179),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                Image.asset(
-                  'images/logo.png',
-                  height: 300,
-                  width: 300,
-                ),
-                Positioned(
-                  top: 72,
-                  child: Image.asset(
-                    'images/logo.png',
-                    height: 0,
-                    width: 0,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Beatriz de Oliveira Santos',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _usernameController,
-              decoration: InputDecoration(labelText: 'Usuário'),
-            ),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Senha'),
-              obscureText: true,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                if (_usernameController.text == 'Vedilson' &&
-                    _passwordController.text == 'trocar123') {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => StudentListPage()),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Credenciais inválidas')),
-                  );
-                }
-              },
-              child: Text('Acessar'),
-            ),
-          ],
-        ),
-      ),
-    );
+  //calcular o imc
+  void _calculoImc() {
+    setState(() {
+      if (_altura != 0) {
+        _result = _peso / (_altura * _altura);
+        _classificacao = _getClassificacao(_result);
+      } else {
+        _result = 0;
+        _classificacao = '';
+      }
+    });
   }
-}
 
-class StudentListPage extends StatefulWidget {
-  @override
-  _StudentListPageState createState() => _StudentListPageState();
-}
-
-class _StudentListPageState extends State<StudentListPage> {
-  List<Compras> products = [
-    Compras(nome: 'Macarrão', categoria: 'Massas', precoMaximo: '17'),
-    Compras(nome: 'Kitkat', categoria: 'Chocolates', precoMaximo: '4'),
-    Compras(nome: 'Doritos', categoria: 'Salgadinho', precoMaximo: '12'),
-  ];
+  String _getClassificacao(double imc) {
+    if (imc < 18.5) {
+      return 'Abaixo do peso';
+    } else if (imc < 24.9) {
+      return 'Peso normal';
+    } else if (imc < 29.9) {
+      return 'Sobrepeso';
+    } else if (imc < 34.9) {
+      return 'Obesidade Grau 1';
+    } else if (imc < 39.9) {
+      return ' Obesidade grau 2 (severa)';
+    } else {
+      return 'Obesidade grau 3 (mórbida)';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista de Compras'),
-      ),
-      backgroundColor: Color.fromARGB(255, 136, 181, 179),
-      body: ListView.builder(
-        itemCount: products.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(products[index].nome),
-            subtitle: Text(products[index].categoria),
-            trailing: IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: () {
-                products.removeAt(index);
-                setState(() {});
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Item removido.')),
-                );
+          title: Text(
+        'Calculadora de IMC - Beatriz de Oliveira 2°C',
+        style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+      )),
+      backgroundColor: Colors.blue[100],
+      body: Padding(
+        padding: EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            // Campo de entrada para o primeiro operando
+            TextField(
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Digite seu peso'),
+              onChanged: (value) {
+                setState(() {
+                  _peso = double.tryParse(value) ?? 0;
+                });
               },
             ),
-            onTap: () async {
-              Compras? updatedProduct = await showDialog(
-                context: context,
-                builder: (context) {
-                  TextEditingController _nomeController =
-                      TextEditingController(text: products[index].nome);
-                  TextEditingController _categoriaController =
-                      TextEditingController(text: products[index].categoria);
-                  TextEditingController _precoMaximoController =
-                      TextEditingController(text: products[index].precoMaximo);
 
-                  return AlertDialog(
-                    title: Text('Editar Item'),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TextField(
-                            controller: _nomeController,
-                            decoration: InputDecoration(labelText: 'Nome')),
-                        TextField(
-                            controller: _categoriaController,
-                            decoration:
-                                InputDecoration(labelText: 'Categoria')),
-                        TextField(
-                            controller: _precoMaximoController,
-                            decoration:
-                                InputDecoration(labelText: 'Preço Máximo')),
-                      ],
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text('Cancelar'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          if (_nomeController.text.isNotEmpty &&
-                              _categoriaController.text.isNotEmpty &&
-                              _precoMaximoController.text.isNotEmpty) {
-                            Navigator.pop(
-                              context,
-                              Compras(
-                                nome: _nomeController.text.trim(),
-                                categoria: _categoriaController.text.trim(),
-                                precoMaximo: _precoMaximoController.text.trim(),
-                              ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(
-                                      'Preencha todos os campos corretamente')),
-                            );
-                          }
-                        },
-                        child: Text('Salvar'),
-                      ),
-                    ],
-                  );
-                },
-              );
-
-              if (updatedProduct != null) {
+            SizedBox(height: 20.0),
+            // Campo de entrada para o segundo operando
+            TextField(
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                  labelText: 'Digite sua altura (coloque . para separar)'),
+              onChanged: (value) {
                 setState(() {
-                  products[index] = updatedProduct;
+                  _altura = double.tryParse(value) ?? 0;
                 });
-              }
-            },
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          Compras? newProduct = await showDialog(
-            context: context,
-            builder: (context) {
-              TextEditingController _nomeController = TextEditingController();
-              TextEditingController _categoriaController =
-                  TextEditingController();
-              TextEditingController _precoMaximoController =
-                  TextEditingController();
+              },
+            ),
 
-              return AlertDialog(
-                title: Text('Novo Item'),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                        controller: _nomeController,
-                        decoration: InputDecoration(labelText: 'Nome')),
-                    TextField(
-                        controller: _categoriaController,
-                        decoration: InputDecoration(labelText: 'Categoria')),
-                    TextField(
-                        controller: _precoMaximoController,
-                        decoration: InputDecoration(labelText: 'Preço Máximo')),
-                  ],
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text('Cancelar'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      if (_nomeController.text.isNotEmpty &&
-                          _categoriaController.text.isNotEmpty &&
-                          _precoMaximoController.text.isNotEmpty) {
-                        Navigator.pop(
-                          context,
-                          Compras(
-                            nome: _nomeController.text.trim(),
-                            categoria: _categoriaController.text.trim(),
-                            precoMaximo: _precoMaximoController.text.trim(),
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text(
-                                  'Preencha todos os campos corretamente')),
-                        );
-                      }
-                    },
-                    child: Text('Adicionar'),
-                  ),
-                ],
-              );
-            },
-          );
+            // Botões para realizar as operações
+            SizedBox(height: 2.0),
+            ElevatedButton(
+                onPressed: _calculoImc,
+                child: Text(
+                  'Calcular',
+                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                )),
 
-          if (newProduct != null) {
-            products.add(newProduct);
-            setState(() {});
-          }
-        },
-        child: Icon(Icons.add),
+            SizedBox(height: 2.0),
+            // Exibição do resultado
+            Text(
+              'Sua IMC: ${_result.toStringAsFixed(2)}',
+              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+            ),
+
+            Text(
+              'Sua classificação: $_classificacao',
+              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+            )
+          ],
+        ),
       ),
     );
   }
